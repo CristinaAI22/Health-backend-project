@@ -9,6 +9,9 @@ const connectDB = require("./db/connect");
 const authenticateUser = require("./middleware/authentication");
 
 const authRouter = require("./routes/auth");
+const getProductsList = require("./routes/getProductsList");
+const dailyUserInfo = require("./routes/dailyUserInfo");
+const getProducts = require("./controllers/getProducts");
 
 const notFoundMiddleware = require("./middleware/notFound");
 const errorHandlerMiddleware = require("./middleware/errorHandler");
@@ -22,6 +25,8 @@ app.get("/", (req, res) => {
 
 //routes
 app.use("/api/health/users", authRouter);
+app.use("/api/health/products", getProductsList);
+app.use("/api/health/users/daily", authenticateUser, dailyUserInfo);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
