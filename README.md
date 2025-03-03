@@ -4,6 +4,7 @@
 
 This is a **REST API** built with **Node.js, Express, and MongoDB** to track daily calorie intake.
 Users can **register, log in, track their food intake, and manage their daily calories**.
+http://localhost:5000/api-docs/
 
 ---
 

@@ -1,0 +1,244 @@
+openapi: 3.0.0
+info:
+  title: Health API
+  description: API for managing health, daily logs, and user data
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+paths:
+  /api/health/users/register:
+    post:
+      summary: User registration
+      description: Allows users to register an account in the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The user's full name
+                  example: "John Doe"
+                email:
+                  type: string
+                  description: The user's email address
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  description: The user's password (should be at least 6 characters, with one letter, one number, and one special character)
+                  example: "Password@123"
+      responses:
+        201:
+          description: User successfully registered
+        400:
+          description: Bad request - validation failed
+
+  /api/health/users/login:
+    post:
+      summary: User login
+      description: Allows users to log into their account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: The user's email address
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  description: The user's password
+                  example: "Password@123"
+      responses:
+        200:
+          description: Login successful, returns JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token for authentication
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        400:
+          description: Invalid email or password
+
+  /api/health/users/logout:
+    post:
+      summary: User logout
+      description: Logs the user out by invalidating their JWT token
+      responses:
+        200:
+          description: Successfully logged out
+
+  /api/health/users/current:
+    get:
+      summary: Get current user info
+      description: Returns the details of the currently authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Returns user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: User's full name
+                    example: "John Doe"
+                  email:
+                    type: string
+                    description: User's email address
+                    example: "john.doe@example.com"
+                  calories:
+                    type: object
+                    description: User's calorie data (may be an object with goal, intake, etc.)
+                    example:
+                      goal: 2500
+                      intake: 2200
+        401:
+          description: Unauthorized access, token required
+
+  /api/health/users/daily:
+    post:
+      summary: Add daily user information
+      description: Adds daily weight, category, and calorie data for a user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                weight:
+                  type: number
+                  description: The user's weight for the day
+                  example: 75
+                categories:
+                  type: string
+                  description: The categories of food or activity
+                  example: "Breakfast, Lunch, Dinner"
+                calories:
+                  type: number
+                  description: The total calorie intake for the day
+                  example: 1800
+      responses:
+        201:
+          description: Daily information successfully added
+        400:
+          description: Invalid input
+
+  /api/health/users/daily/{date}:
+    get:
+      summary: Get daily information by date
+      description: Retrieves daily information for a specific date
+      parameters:
+        - in: path
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+          description: The date for which to retrieve the information
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Returns daily information for the specified date
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    description: The date of the record
+                    example: "2025-03-01"
+                  weight:
+                    type: number
+                    description: User's weight on that day
+                    example: 75
+                  categories:
+                    type: string
+                    description: Categories of meals or activities
+                    example: "Breakfast, Lunch, Dinner"
+                  calories:
+                    type: number
+                    description: Total calories consumed on that day
+                    example: 1800
+        404:
+          description: No data found for the specified date
+
+  /api/health/calculate-calories:
+    post:
+      summary: Calculate daily calorie intake
+      description: Calculates the user's daily calorie requirements based on input data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                age:
+                  type: integer
+                  description: The user's age
+                  example: 30
+                gender:
+                  type: string
+                  enum:
+                    - male
+                    - female
+                  description: The user's gender
+                  example: "male"
+                weight:
+                  type: number
+                  description: The user's weight (kg)
+                  example: 75
+                height:
+                  type: number
+                  description: The user's height (cm)
+                  example: 175
+                activityLevel:
+                  type: string
+                  enum:
+                    - sedentary
+                    - light
+                    - moderate
+                    - active
+                    - very_active
+                  description: The user's level of physical activity
+                  example: "moderate"
+      responses:
+        200:
+          description: Successfully calculated daily calorie intake
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  calories:
+                    type: integer
+                    description: The daily calorie requirement
+                    example: 2500
+        400:
+          description: Invalid input
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

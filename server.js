@@ -1,9 +1,13 @@
 require("dotenv").config();
 require("express-async-errors");
 
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const swaggerDocument = YAML.load("./swagger.yaml");
 
 const connectDB = require("./db/connect");
 const authenticateUser = require("./middleware/authentication");
@@ -20,10 +24,11 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send('<h1>Health API</h1><a href="/api-docs">Documentation</a>');
+  res.send('<h1>Health API</h1><a href="/api-docs">API Documentation</a>');
 });
 
 //routes
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/health/users", authRouter);
 app.use("/api/health/products", getProductsList);
 app.use("/api/health/users/daily", authenticateUser, dailyUserInfo);
