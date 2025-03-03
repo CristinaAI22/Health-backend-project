@@ -24,7 +24,7 @@ const register = async (req, res) => {
 
   if (error) {
     console.error(error.message);
-    throw new BadRequestError(`Bad Reques. ${error.message} `);
+    throw new BadRequestError(`Bad Request: ${error.message} `);
   }
 
   const createdUser = new User({

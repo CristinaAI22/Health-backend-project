@@ -11,7 +11,7 @@ const authenticateUser = require("./middleware/authentication");
 const authRouter = require("./routes/auth");
 const getProductsList = require("./routes/getProductsList");
 const dailyUserInfo = require("./routes/dailyUserInfo");
-const getProducts = require("./controllers/getProducts");
+const publicCaloriesCalculator = require("./routes/publicCaloriesCalculator");
 
 const notFoundMiddleware = require("./middleware/notFound");
 const errorHandlerMiddleware = require("./middleware/errorHandler");
@@ -27,6 +27,8 @@ app.get("/", (req, res) => {
 app.use("/api/health/users", authRouter);
 app.use("/api/health/products", getProductsList);
 app.use("/api/health/users/daily", authenticateUser, dailyUserInfo);
+app.use("/api/health/calculate-calories", publicCaloriesCalculator);
+
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 

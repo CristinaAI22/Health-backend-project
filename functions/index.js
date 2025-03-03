@@ -1,4 +1,4 @@
-const calculateNumberOfCalories = require("./calculateCalories");
+const calculateNumberOfCalories = require("./calculateCaloriesFormula");
 const restrictedFood = require("./restrictedFood");
 const getNonRecommendedCategories = require("./getNonRecommendedCategories");
 
